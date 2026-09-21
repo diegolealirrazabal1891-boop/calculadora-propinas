@@ -1,4 +1,3 @@
-import { CircleMinus, Plus } from 'lucide-react';
 import { OrderItem } from './components/OrderItem';
 import { Divider } from './components/Divider';
 import { useState } from 'react';
@@ -10,12 +9,23 @@ const products = [
   { id: 3, name: 'Pollo con papas', price: 32 },
   { id: 4, name: 'Coca-Cola', price: 20 },
 ]
+type OrderItemType = {
+  id: number
+  name: string
+  price: number
+  quantity: number
+}
+type Product = {
+  id: number
+  name: string
+  price: number
+}
 
 function App() {
   const [isOpen, setIsOpen] = useState(false)
-  const [orderItems, setOrderItems] = useState([])
+  const [orderItems, setOrderItems] = useState<OrderItemType[]>([])
   const [Percentage, setPercentage] = useState(0)
-  const addItem = (product) => {
+  const addItem = (product: Product) => {
 
     const orderItemsAux = [...orderItems]
     const selectedProductIndex = orderItems.findIndex(i => i.id === product.id)
@@ -41,29 +51,34 @@ function App() {
     (acumulador, producto) => acumulador + producto.price * producto.quantity,
     0
   )
-  const handlePercentage = (value) => {
+  const handlePercentage = (value : number) => {
 
     setPercentage(value)
   }
   const tipPercentage = (subtotal * Percentage / 100)
   const priceTotal = (subtotal + tipPercentage)
-  const decreaseQuantity = (id) => {
+  const decreaseQuantity = (id : number) => {
     const item = orderItems.find(item => item.id === id)
-    if (item.quantity === 1) {
-      setOrderItems(orderItems.filter(item => item.id !== id))
-    } else {
-      setOrderItems(
-        orderItems.map(item => {
-          if (item.id === id) {
-            return {
-              ...item,
-              quantity: item.quantity - 1
-            }
+
+  if (!item) return
+
+  if (item.quantity === 1) {
+    setOrderItems(orderItems.filter(item => item.id !== id))
+  } else {
+    setOrderItems(
+      orderItems.map(item => {
+        if (item.id === id) {
+          return {
+            ...item,
+            quantity: item.quantity - 1
           }
-          return item
-        }))
-    }
+        }
+
+        return item
+      })
+    )
   }
+}
 
   const clearOrder = () => {
     setOrderItems([])
@@ -87,7 +102,7 @@ function App() {
           className='flex border w-full justify-center py-4 text-blue-700 border-gray-400 rounded-lg border-dashed'
           onClick={() => setIsOpen(true)}
         >
-          <Plus />
+          <button />
           Add Item
         </button>
 
@@ -132,16 +147,16 @@ function App() {
           <h1 className='text-5xl font-bold mt-6 text-blue-700'>${priceTotal}</h1>
         </div>
       </div>
-    <div>
-      <button onClick={() => clearOrder()}
-      className="px-4 py-2 text-base bg-blue-500 text-white rounded mt-16 mx-5 hover:bg-blue-700 " >
-      <h1>Limpiar</h1>
-      </button>
-  
+      <div>
+        <button onClick={() => clearOrder()}
+          className="px-4 py-2 text-base bg-blue-500 text-white rounded mt-16 mx-5 hover:bg-blue-700 " >
+          <h1>Limpiar</h1>
+        </button>
 
-    </div>
 
-    
+      </div>
+
+
       <div className="p-10">
         {/* Modal */}
         {isOpen && (
